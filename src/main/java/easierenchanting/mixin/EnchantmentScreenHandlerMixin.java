@@ -10,10 +10,7 @@ import net.minecraft.screen.*;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.apache.logging.log4j.Level;
-import org.spongepowered.asm.mixin.Dynamic;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,6 +22,7 @@ public abstract class EnchantmentScreenHandlerMixin extends ScreenHandler implem
         super(type, syncId);
     }
 
+    @Mutable
     @Final
     private Property easierenchant_cost;
 
@@ -57,13 +55,13 @@ public abstract class EnchantmentScreenHandlerMixin extends ScreenHandler implem
     public void buttonClick(PlayerEntity player, int id, CallbackInfoReturnable<Boolean> ci){
         if(id == 3){
             ItemStack itemStack2 = this.inventory.getStack(1);
-            if((itemStack2.getCount() < getLapisCost() && !player.abilities.creativeMode)
+            if((itemStack2.getCount() < getLapisCost() && !player.getAbilities().creativeMode)
                || this.enchantmentPower[0] <= 0){
                 ci.setReturnValue(false);
                 return;
             }
             this.context.run((world, blockPos) -> {
-                if (!player.abilities.creativeMode) {
+                if (!player.getAbilities().creativeMode) {
                     itemStack2.decrement(getLapisCost());
                     if (itemStack2.isEmpty()) {
                         this.inventory.setStack(1, ItemStack.EMPTY);
